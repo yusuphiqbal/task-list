@@ -8,10 +8,34 @@ const taskInput = document.querySelector('#task');
 loadEventlisters();
 
 function loadEventlisters() {
+  document.addEventListener('DOMContentLoaded', getTasksFromLocalStorage);
   form.addEventListener('submit', addTask);
   taskList.addEventListener('click', removeTask);
   clearButton.addEventListener('click', clearTasks);
   filter.addEventListener('keyup', filterTasks);
+}
+
+function getTasksFromLocalStorage() {
+  let tasks;
+
+  if (localStorage.getItem('tasks') === null) {
+    tasks = [];
+  } else {
+    tasks = JSON.parse(localStorage.getItem('tasks'));
+  }
+
+  tasks.forEach(function (task) {
+    const li = document.createElement('li');
+    li.className = 'collection-item';
+    li.appendChild(document.createTextNode(task));
+
+    const link = document.createElement('a');
+    link.className = 'delete-item secondary-content';
+    link.innerHTML = '<i class="material-icons">delete</i>';
+
+    li.appendChild(link);
+    taskList.appendChild(li);
+  });
 }
 
 function addTask(e) {
@@ -67,9 +91,9 @@ function clearTasks() {
 
 function filterTasks(e) {
   const text = e.target.value.toLowerCase();
-  document.querySelectorAll('.collection-item').forEach(function(task) {
+  document.querySelectorAll('.collection-item').forEach(function (task) {
     const item = task.firstChild.textContent;
-    
+
     if (item.toLowerCase().indexOf(text) != -1) {
       task.style.display = 'block';
     } else {
